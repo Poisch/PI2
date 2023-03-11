@@ -27,12 +27,12 @@ int MUX1_SIG_pin = 7;
 // MULTIPLEXER 2 - Lignes
 // ------------------------------------------------------------------
 //Mux_2 control pins
-int MUX2_s0 = 9;
-int MUX2_s1 = 10;
-int MUX2_s2 = 11;
-int MUX2_s3 = 12;
+int MUX2_s0 = 22;
+int MUX2_s1 = 24;
+int MUX2_s2 = 26;
+int MUX2_s3 = 28;
 //Mux_2 in "SIG" pin
-int MUX2_SIG_pin = 7;
+int MUX2_SIG_pin = 30;
 
 int MUX[2][5]  = {{MUX1_s0, MUX1_s1, MUX1_s2, MUX1_s3, MUX1_SIG_pin},{MUX2_s0, MUX2_s1, MUX2_s2, MUX2_s3, MUX2_SIG_pin}};
   
@@ -99,7 +99,7 @@ void loop()
   }
   delay(1000);
   
-  //affiche(etat);
+  affiche(etat);
   Serial.println();  
   //Serial.println();
   //Serial.println();
@@ -142,9 +142,9 @@ float readMux(int channel, int MUX_s0, int MUX_s1, int MUX_s2, int MUX_s3, int M
   
   return digitalRead(MUX_SIG_pin);
 }
-void affiche(int objet[2][8])
+void affiche(int objet[4][8])
 {
-  for (int i = 0; i < 2; i ++) 
+  for (int i = 0; i < 4; i ++) 
   {
       for (int j=0; j<8;j++)
       {
@@ -155,7 +155,8 @@ void affiche(int objet[2][8])
 }
 void changement()
 {
-  jeveuxchanger=true;
+  if(jeveuxchanger){jeveuxchanger=false;}
+  else{jeveuxchanger=true;}
 }
 
 int changementPiece()
@@ -177,7 +178,7 @@ int changementPiece()
         etatBougerPiece1[j*2][i]=readMux(i, MUX[j][0], MUX[j][1], MUX[j][2], MUX[j][3], MUX[j][4]);
         if(etatBougerPiece1[j*2][i]!=etat[j*2][i])
         {
-          positionPieceQuiBouge[0]=0;
+          positionPieceQuiBouge[0]=j*2;
           positionPieceQuiBouge[1]=i;
           change=true;
           etat[j*2][i]=etatBougerPiece1[j*2][i];
@@ -188,7 +189,7 @@ int changementPiece()
         etatBougerPiece1[j*2+1][i-8]=readMux(i, MUX[j][0], MUX[j][1], MUX[j][2], MUX[j][3], MUX[j][4]);
         if(etatBougerPiece1[j*2+1][i-8]!=etat[j*2+1][i-8])
         {
-          positionPieceQuiBouge[0]=0;
+          positionPieceQuiBouge[0]=j*2+1;
           positionPieceQuiBouge[1]=i-8;
           change=true;
           etat[j*2+1][i-8]=etatBougerPiece1[j*2+1][i-8];
@@ -198,7 +199,6 @@ int changementPiece()
   }
   //comparaison avec l'ancien etat
 
-  }
   if(change)
   {
     //on peut allumer la led verte
