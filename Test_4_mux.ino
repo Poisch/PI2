@@ -73,17 +73,17 @@ void loop()
   }
   delay(1000);
   
-  affiche(etat);
+  //affiche(etat);
   Serial.println();  
-  Serial.println();
-  Serial.println();
+  //Serial.println();
+  //Serial.println();
   
  if(jeveuxchanger)
     {
       positionavant=changementPiece();
       delay(100);
       positionapres=changementPiece();
-      Serial.println("Vous pouvez poser la pièce");
+      Serial.println("Vous pouvez poser la piece");
     }
     delay(1000);
   
@@ -147,23 +147,23 @@ int changementPiece()
     if (i < 8)
     {
       etatBougerPiece1[0][i]=readMux(i, MUX[0], MUX[1], MUX[2], MUX[3], MUX[4]);
-          if(etatBougerPiece1[0][i]!=etat[0][i])
-          {
-            positionPieceQuiBouge[0]=0;
-            positionPieceQuiBouge[1]=i;
-            change=true;
-            etat[0][i]=etatBougerPiece1[0][i];
-          }
+      if(etatBougerPiece1[0][i]!=etat[0][i])
+      {
+        positionPieceQuiBouge[0]=0;
+        positionPieceQuiBouge[1]=i;
+        change=true;
+        etat[0][i]=etatBougerPiece1[0][i];
+      }
     }
     else
     {
       etatBougerPiece1[1][i-8]=readMux(i, MUX[0], MUX[1], MUX[2], MUX[3], MUX[4]);
-          if(etatBougerPiece1[1][i]!=etat[1][i])
+          if(etatBougerPiece1[1][i-8]!=etat[1][i-8])
           {
             positionPieceQuiBouge[0]=0;
             positionPieceQuiBouge[1]=i;
             change=true;
-            etat[1][i]=etatBougerPiece1[1][i];
+            etat[1][i-8]=etatBougerPiece1[1][i-8];
           }
     }
     //comparaison avec l'ancien etat
@@ -173,7 +173,7 @@ int changementPiece()
   {
     //on peut allumer la led verte
     Serial.println("Il y a eu un changement de position");
-    Serial.println("La piece qui a bougé était en ligne : "+ String(positionPieceQuiBouge[0]+1)+"\nEn colonne : "+ String(positionPieceQuiBouge[1]+1)); //parce que sur arduino les positions sont numérotés de 0 à 3 mais en vrai elles vont de 1 à 4 
+    Serial.println("La piece qui a bouge etait en ligne : "+ String(positionPieceQuiBouge[0]+1)+"\nEn colonne : "+ String(positionPieceQuiBouge[1]+1)); //parce que sur arduino les positions sont numérotés de 0 à 3 mais en vrai elles vont de 1 à 4 
     jeveuxchanger=false;
   }
   return positionPieceQuiBouge;
