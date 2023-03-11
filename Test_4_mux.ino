@@ -1,6 +1,6 @@
 // ------------------------------------------------------------------
 // PROJET PI² : Jeu d'échec KAIROS
-// Par Marçal Thomas
+// Par Marçal Thomas, Kermel Aurore
 // Janvier 2023
 // ------------------------------------------------------------------
 
@@ -8,7 +8,10 @@
 // ------------------------------------------------------------------
 int boutonPin = 2;
 int etat[8][8]={};
-int demandeChangement=0;
+
+bool jeveuxchanger=false;
+int positionavant;
+int positionapres;
 
 // MULTIPLEXER 1 - Lignes
 // ------------------------------------------------------------------
@@ -61,8 +64,8 @@ void setup() {
 // BOUTON POUSSOIR
 // ------------------------------------------------------------------
   pinMode(boutonPin,INPUT);
-  attachInterrupt(boutonPin, changement , CHANGE); // attache l’interruption externe n°0 à la fonction blink
-
+  attachInterrupt(digitalPinToInterrupt(boutonPin), changement , RISING); // attache l’interruption externe n°0 à la fonction blink
+  
 // MULTIPLEXER 1
 // ------------------------------------------------------------------
   pinMode(MUX1_s0, OUTPUT);
@@ -186,7 +189,7 @@ void loop() {
   Serial.println();
   Serial.println();
   affiche(etat);
-  if(demandeChangement!=0){Serial.println("CHANGE !");}
+  if(jeveuxchanger){Serial.println("CHANGE !");}
   
 }
 
@@ -232,8 +235,5 @@ void affiche(int objet[8][8])
 }
 void changement()
 {
-  if(demandeChangement<2){demandeChangement++;}
-  else{demandeChangement=0;}
-  Serial.println(demandeChangement);
-
+  jeveuxchanger=true;
 }
