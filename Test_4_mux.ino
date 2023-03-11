@@ -53,35 +53,42 @@ void setup() {
   
 }
 
-void loop() {
+void loop() 
+{
 
   //Loop through and read all 16 values
   //Serial.println("A B C D E F G H");
   //Serial.println("---------------");
-    for (int i = 0; i < 16; i ++) 
+  for (int i = 0; i < 16; i ++) 
+  {
+    if (i < 8)
     {
-      if (i < 8)
-      {
-        if (readMux(i, MUX[j][0], MUX[j][1], MUX[j][2], MUX[j][3], MUX[j][4]) < 4.95) {etat[0][i]=0;}
-        else {etat[0][i]=1;}    
-      }
-      else
-      {
-        if (readMux(i, MUX[0], MUX[1], MUX[2], MUX[3], MUX[4]) < 4.95) {etat[1][i]=0;}
-        else {etat[1][i]=1;}    
-      }
+      etat[0][i]=readMux(i, MUX[0], MUX[1], MUX[2], MUX[3], MUX[4]);
     }
-  delay(3000);
+    else
+    {
+      etat[1][i-8]=readMux(i, MUX[0], MUX[1], MUX[2], MUX[3], MUX[4]);
+      //Serial.println(readMux(i, MUX[0], MUX[1], MUX[2], MUX[3], MUX[4]));  
+    }
+  }
+  delay(1000);
   
+  affiche(etat);
   Serial.println();  
   Serial.println();
   Serial.println();
-  affiche(etat);
-  if(jeveuxchanger){Serial.println("CHANGE !");}
+  
+  if(jeveuxchanger)
+  {
+    Serial.println("CHANGE !");
+    jeveuxchanger=false;
+    
+  }
   
 }
 
-float readMux(int channel, int MUX_s0, int MUX_s1, int MUX_s2, int MUX_s3, int MUX_SIG_pin) {
+float readMux(int channel, int MUX_s0, int MUX_s1, int MUX_s2, int MUX_s3, int MUX_SIG_pin) 
+{
   int controlPin[] = {MUX_s0, MUX_s1, MUX_s2, MUX_s3};
   int muxChannel[16][4] = { {0, 0, 0, 0},
                             {1, 0, 0, 0},
@@ -104,11 +111,8 @@ float readMux(int channel, int MUX_s0, int MUX_s1, int MUX_s2, int MUX_s3, int M
   for (int i = 0; i < 4; i ++) {
     digitalWrite(controlPin[i], muxChannel[channel][i]);
   }
-  //read the value at the SIG pin
-  int val = analogRead(MUX_SIG_pin); //return the value
-
-  float voltage = (val*5.0)/1024;
-  return voltage;
+  
+  return digitalRead(MUX_SIG_pin);
 }
 void affiche(int objet[2][8])
 {
