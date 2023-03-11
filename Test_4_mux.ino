@@ -78,12 +78,14 @@ void loop()
   Serial.println();
   Serial.println();
   
-  if(jeveuxchanger)
-  {
-    Serial.println("CHANGE !");
-    jeveuxchanger=false;
-    
-  }
+ if(jeveuxchanger)
+    {
+      positionavant=changementPiece();
+      delay(100);
+      positionapres=changementPiece();
+      Serial.println("Vous pouvez poser la pièce");
+    }
+    delay(1000);
   
 }
 
@@ -128,4 +130,51 @@ void affiche(int objet[2][8])
 void changement()
 {
   jeveuxchanger=true;
+}
+
+int changementPiece()
+{
+  // fonction qui retourne la postion de la pièce qui a bougé
+  int etatBougerPiece1[2][8];
+  int positionPieceQuiBouge[2];
+  bool change=false;
+  Serial.println("Change la piece de place");
+  delay(3000);
+  Serial.println("Enregistre les positions");
+  //enregistrement du nouvel etat du plateau
+  for (int i = 0; i < 16; i ++) 
+  {
+    if (i < 8)
+    {
+      etatBougerPiece1[0][i]=readMux(i, MUX[0], MUX[1], MUX[2], MUX[3], MUX[4]);
+          if(etatBougerPiece1[0][i]!=etat[0][i])
+          {
+            positionPieceQuiBouge[0]=0;
+            positionPieceQuiBouge[1]=i;
+            change=true;
+            etat[0][i]=etatBougerPiece1[0][i];
+          }
+    }
+    else
+    {
+      etatBougerPiece1[1][i-8]=readMux(i, MUX[0], MUX[1], MUX[2], MUX[3], MUX[4]);
+          if(etatBougerPiece1[1][i]!=etat[1][i])
+          {
+            positionPieceQuiBouge[0]=0;
+            positionPieceQuiBouge[1]=i;
+            change=true;
+            etat[1][i]=etatBougerPiece1[1][i];
+          }
+    }
+    //comparaison avec l'ancien etat
+
+  }
+  if(change)
+  {
+    //on peut allumer la led verte
+    Serial.println("Il y a eu un changement de position");
+    Serial.println("La piece qui a bougé était en ligne : "+ String(positionPieceQuiBouge[0]+1)+"\nEn colonne : "+ String(positionPieceQuiBouge[1]+1)); //parce que sur arduino les positions sont numérotés de 0 à 3 mais en vrai elles vont de 1 à 4 
+    jeveuxchanger=false;
+  }
+  return positionPieceQuiBouge;
 }
