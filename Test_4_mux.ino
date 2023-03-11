@@ -7,7 +7,7 @@
 // BOUTON POUSSOIR
 // ------------------------------------------------------------------
 int boutonPin = 2;
-int etat[2][8];
+int etat[4][8];
 
 bool jeveuxchanger=false;
 int positionavant;
@@ -22,10 +22,19 @@ int MUX1_s2 = 11;
 int MUX1_s3 = 12;
 //Mux_1 in "SIG" pin
 int MUX1_SIG_pin = 7;
+
+
+// MULTIPLEXER 2 - Lignes
 // ------------------------------------------------------------------
+//Mux_2 control pins
+int MUX2_s0 = 9;
+int MUX2_s1 = 10;
+int MUX2_s2 = 11;
+int MUX2_s3 = 12;
+//Mux_2 in "SIG" pin
+int MUX2_SIG_pin = 7;
 
-
-int MUX[5]  = {MUX1_s0, MUX1_s1, MUX1_s2, MUX1_s3, MUX1_SIG_pin};
+int MUX[2][5]  = {{MUX1_s0, MUX1_s1, MUX1_s2, MUX1_s3, MUX1_SIG_pin},{MUX2_s0, MUX2_s1, MUX2_s2, MUX2_s3, MUX2_SIG_pin}};
   
 void setup() {
 
@@ -48,6 +57,21 @@ void setup() {
   digitalWrite(MUX1_s2, LOW);
   digitalWrite(MUX1_s3, LOW);
 // ------------------------------------------------------------------
+  
+// MULTIPLEXER 2
+// ------------------------------------------------------------------
+  pinMode(MUX2_s0, OUTPUT);
+  pinMode(MUX2_s1, OUTPUT);
+  pinMode(MUX2_s2, OUTPUT);
+  pinMode(MUX2_s3, OUTPUT);
+
+  pinMode(MUX2_SIG_pin,INPUT);
+
+  digitalWrite(MUX2_s0, LOW);
+  digitalWrite(MUX2_s1, LOW);
+  digitalWrite(MUX2_s2, LOW);
+  digitalWrite(MUX2_s3, LOW);
+// ------------------------------------------------------------------
 
   Serial.begin(9600);
   
@@ -59,16 +83,18 @@ void loop()
   //Loop through and read all 16 values
   //Serial.println("A B C D E F G H");
   //Serial.println("---------------");
-  for (int i = 0; i < 16; i ++) 
+  for (int j=0; j<2; j++)
   {
-    if (i < 8)
+    for (int i = 0; i < 16; i ++) 
     {
-      etat[0][i]=readMux(i, MUX[0], MUX[1], MUX[2], MUX[3], MUX[4]);
-    }
-    else
-    {
-      etat[1][i-8]=readMux(i, MUX[0], MUX[1], MUX[2], MUX[3], MUX[4]);
-      //Serial.println(readMux(i, MUX[0], MUX[1], MUX[2], MUX[3], MUX[4]));  
+      if (i < 8)
+      {
+        etat[j*2][i]=readMux(i, MUX[j][0], MUX[j][1], MUX[j][2], MUX[j][3], MUX[j][4]);
+      }
+      else
+      {
+        etat[j*2+1][i-8]=readMux(i, MUX[j][0], MUX[j][1], MUX[j][2], MUX[j][3], MUX[j][4]);
+      }
     }
   }
   delay(1000);
@@ -142,31 +168,35 @@ int changementPiece()
   delay(3000);
   Serial.println("Enregistre les positions");
   //enregistrement du nouvel etat du plateau
-  for (int i = 0; i < 16; i ++) 
+  for (int j=0; j<2; j++)
   {
-    if (i < 8)
+    for (int i = 0; i < 16; i ++) 
     {
-      etatBougerPiece1[0][i]=readMux(i, MUX[0], MUX[1], MUX[2], MUX[3], MUX[4]);
-      if(etatBougerPiece1[0][i]!=etat[0][i])
+      if (i < 8)
       {
-        positionPieceQuiBouge[0]=0;
-        positionPieceQuiBouge[1]=i;
-        change=true;
-        etat[0][i]=etatBougerPiece1[0][i];
+        etatBougerPiece1[j*2][i]=readMux(i, MUX[j][0], MUX[j][1], MUX[j][2], MUX[j][3], MUX[j][4]);
+        if(etatBougerPiece1[j*2][i]!=etat[j*2][i])
+        {
+          positionPieceQuiBouge[0]=0;
+          positionPieceQuiBouge[1]=i;
+          change=true;
+          etat[j*2][i]=etatBougerPiece1[j*2][i];
+        }
+      }
+      else
+      {
+        etatBougerPiece1[j*2+1][i-8]=readMux(i, MUX[j][0], MUX[j][1], MUX[j][2], MUX[j][3], MUX[j][4]);
+        if(etatBougerPiece1[j*2+1][i-8]!=etat[j*2+1][i-8])
+        {
+          positionPieceQuiBouge[0]=0;
+          positionPieceQuiBouge[1]=i-8;
+          change=true;
+          etat[j*2+1][i-8]=etatBougerPiece1[j*2+1][i-8];
+        }
       }
     }
-    else
-    {
-      etatBougerPiece1[1][i-8]=readMux(i, MUX[0], MUX[1], MUX[2], MUX[3], MUX[4]);
-          if(etatBougerPiece1[1][i-8]!=etat[1][i-8])
-          {
-            positionPieceQuiBouge[0]=0;
-            positionPieceQuiBouge[1]=i;
-            change=true;
-            etat[1][i-8]=etatBougerPiece1[1][i-8];
-          }
-    }
-    //comparaison avec l'ancien etat
+  }
+  //comparaison avec l'ancien etat
 
   }
   if(change)
