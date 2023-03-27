@@ -7,7 +7,7 @@
 // BOUTON POUSSOIR
 // ------------------------------------------------------------------
 int boutonPin = 2;
-int etat[4][8];
+int etat[8][8];
 
 bool jeveuxchanger=false;
 String positionavant;
@@ -30,16 +30,16 @@ int MUX1_s3 = 12;
 //Mux_1 in "SIG" pin
 int MUX1_SIG_pin = 7;
 
-
-// MULTIPLEXER 2 - Lignes
+// MULTIPLEXER 2
 // ------------------------------------------------------------------
 //Mux_2 control pins
-int MUX2_s0 = 22;
-int MUX2_s1 = 24;
-int MUX2_s2 = 26;
-int MUX2_s3 = 28;
+int MUX2_s0 = 48;
+int MUX2_s1 = 46;
+int MUX2_s2 = 49;
+int MUX2_s3 = 47;
 //Mux_2 in "SIG" pin
-int MUX2_SIG_pin = 30;
+int MUX2_SIG_pin = 14;
+// ------------------------------------------------------------------
 
 // MULTIPLEXER 3
 // ------------------------------------------------------------------
@@ -60,16 +60,15 @@ int MUX4_s1 = 38;
 int MUX4_s2 = 41;
 int MUX4_s3 = 39;
 //Mux_4 in "SIG" pin
-int MUX4_SIG_pin = 12;
+int MUX4_SIG_pin = 100;
 // ------------------------------------------------------------------
-
 
 int MUX[4][5]  = {{MUX1_s0, MUX1_s1, MUX1_s2, MUX1_s3, MUX1_SIG_pin}, {MUX2_s0, MUX2_s1, MUX2_s2, MUX2_s3, MUX2_SIG_pin}, {MUX3_s0, MUX3_s1, MUX3_s2, MUX3_s3, MUX3_SIG_pin}, {MUX4_s0, MUX4_s1, MUX4_s2, MUX4_s3, MUX4_SIG_pin}};
   
 void setup() {
 
   Serial.begin(9600);
-
+  
 // BOUTON POUSSOIR
 // ------------------------------------------------------------------
   pinMode(boutonPin,INPUT);
@@ -78,15 +77,15 @@ void setup() {
 // AFFICHAGE ECRAN
 // ------------------------------------------------------------------
 
-  lcd.init(); //initialisation de l'écran LCD
-  lcd.cursor_on();
-  lcd.blink_on();
-  lcd.backlight();
-  lcd.print("Jeu d'Echec");
+  // lcd.init(); //initialisation de l'écran LCD
+  // lcd.cursor_on();
+  // lcd.blink_on();
+  // lcd.backlight();
+  // lcd.print("Jeu d'Echec");
 
-  while (!Serial) {
-    ; // attendre la connexion série
-  }
+  // while (!Serial) {
+  //   ; // attendre la connexion série
+  // }
 // MULTIPLEXER 1
 // ------------------------------------------------------------------
   pinMode(MUX1_s0, OUTPUT);
@@ -149,14 +148,15 @@ void setup() {
   
 }
 
-void loop() 
-{
+void loop() {
 
   //Loop through and read all 16 values
   //Serial.println("A B C D E F G H");
   //Serial.println("---------------");
+  
   for (int j=0; j<4; j++)
   {
+    
     for (int i = 0; i < 16; i ++) 
     {
       if (i < 8)
@@ -171,19 +171,20 @@ void loop()
   }
   delay(1000);
   
-  affiche(etat);
-  Serial.println();  
-  Serial.println();
+  //affichage du plateau et de son etat atuel
+  //affiche(etat);
+  //Serial.println();  
+  //Serial.println();
   //Serial.println();
   
  if(jeveuxchanger)
-    {
+  {
       positionavant=changementPiece();
       delay(100);
       positionapres=changementPiece();
       affichepositions(positionavant,positionapres);
-    }
-    delay(1000);
+  }
+  delay(1000);
   
 }
 
