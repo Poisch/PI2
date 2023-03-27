@@ -77,15 +77,15 @@ void setup() {
 // AFFICHAGE ECRAN
 // ------------------------------------------------------------------
 
-  // lcd.init(); //initialisation de l'écran LCD
-  // lcd.cursor_on();
-  // lcd.blink_on();
-  // lcd.backlight();
-  // lcd.print("Jeu d'Echec");
+  lcd.init(); //initialisation de l'écran LCD
+  lcd.cursor_on();
+  lcd.blink_on();
+  lcd.backlight();
+  lcd.print("Jeu d'Echec");
 
-  // while (!Serial) {
-  //   ; // attendre la connexion série
-  // }
+  while (!Serial) {
+    ; // attendre la connexion série
+  }
 // MULTIPLEXER 1
 // ------------------------------------------------------------------
   pinMode(MUX1_s0, OUTPUT);
@@ -172,9 +172,9 @@ void loop() {
   delay(1000);
   
   //affichage du plateau et de son etat atuel
-  //affiche(etat);
-  //Serial.println();  
-  //Serial.println();
+  affiche(etat);
+  Serial.println();  
+  Serial.println();
   //Serial.println();
   
  if(jeveuxchanger)
@@ -235,6 +235,8 @@ void changement()
 void affichepositions(String avant, String apres)
 {
   Serial.println(avant+apres);
+  lcd.clear(); // Efface l'écran LCD
+  lcd.print("De :"+ avant+ " a :" +apres); // Affiche le mode
 }
 
 String changementPiece()
@@ -244,10 +246,18 @@ String changementPiece()
   int etatBougerPiece1[8][8]; //variable qui va contenir les valeurs du plateau après le mouvement d'une pièce
   int positionPieceQuiBouge[2]={0,0};
   bool change=false;
-  Serial.println("Change la piece de place");
+  //Affichage des action
+  //--------------------------------------------------------
+  //Serial.println("Change la piece de place");
+  lcd.clear(); // Efface l'écran LCD
+  lcd.print("Mouvement du pion"); 
   delay(6000);
-  Serial.println("Enregistre les positions");
+  //Serial.println("Enregistre les positions");
+  lcd.clear(); // Efface l'écran LCD
+  lcd.print("Enregistrement"); 
+  delay(1000);
   //enregistrement du nouvel etat du plateau
+  //---------------------------------------------------
   for (int j=0; j<4 && !change; j++)
   {
     for (int i = 0; i < 16 && !change; i ++) 
@@ -280,7 +290,7 @@ String changementPiece()
 
   if(change)
   {
-    //on peut allumer la led verte
+    
     //Serial.println("Il y a eu un changement de position");
     //Serial.println(correspondance[positionPieceQuiBouge[0]]+String(positionPieceQuiBouge[1]+1)); //parce que sur arduino les positions sont numérotés de 0 à 3 mais en vrai elles vont de 1 à 4 
     jeveuxchanger=false;
