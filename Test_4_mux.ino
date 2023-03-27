@@ -64,7 +64,7 @@ int MUX4_SIG_pin = 12;
 // ------------------------------------------------------------------
 
 
-int MUX[2][5]  = {{MUX1_s0, MUX1_s1, MUX1_s2, MUX1_s3, MUX1_SIG_pin},{MUX2_s0, MUX2_s1, MUX2_s2, MUX2_s3, MUX2_SIG_pin}};
+int MUX[4][5]  = {{MUX1_s0, MUX1_s1, MUX1_s2, MUX1_s3, MUX1_SIG_pin}, {MUX2_s0, MUX2_s1, MUX2_s2, MUX2_s3, MUX2_SIG_pin}, {MUX3_s0, MUX3_s1, MUX3_s2, MUX3_s3, MUX3_SIG_pin}, {MUX4_s0, MUX4_s1, MUX4_s2, MUX4_s3, MUX4_SIG_pin}};
   
 void setup() {
 
@@ -116,7 +116,35 @@ void setup() {
   digitalWrite(MUX2_s2, LOW);
   digitalWrite(MUX2_s3, LOW);
 // ------------------------------------------------------------------
+// MULTIPLEXER 3
+// ------------------------------------------------------------------
+  pinMode(MUX3_s0, OUTPUT);
+  pinMode(MUX3_s1, OUTPUT);
+  pinMode(MUX3_s2, OUTPUT);
+  pinMode(MUX3_s3, OUTPUT);
 
+  pinMode(MUX3_SIG_pin,INPUT);
+
+  digitalWrite(MUX3_s0, LOW);
+  digitalWrite(MUX3_s1, LOW);
+  digitalWrite(MUX3_s2, LOW);
+  digitalWrite(MUX3_s3, LOW);
+// ------------------------------------------------------------------
+
+// MULTIPLEXER 4
+// ------------------------------------------------------------------
+  pinMode(MUX4_s0, OUTPUT);
+  pinMode(MUX4_s1, OUTPUT);
+  pinMode(MUX4_s2, OUTPUT);
+  pinMode(MUX4_s3, OUTPUT);
+
+  pinMode(MUX4_SIG_pin,INPUT);
+
+  digitalWrite(MUX4_s0, LOW);
+  digitalWrite(MUX4_s1, LOW);
+  digitalWrite(MUX4_s2, LOW);
+  digitalWrite(MUX4_s3, LOW);
+// ------------------------------------------------------------------
   
   
 }
@@ -127,7 +155,7 @@ void loop()
   //Loop through and read all 16 values
   //Serial.println("A B C D E F G H");
   //Serial.println("---------------");
-  for (int j=0; j<2; j++)
+  for (int j=0; j<4; j++)
   {
     for (int i = 0; i < 16; i ++) 
     {
@@ -186,9 +214,9 @@ float readMux(int channel, int MUX_s0, int MUX_s1, int MUX_s2, int MUX_s3, int M
   
   return digitalRead(MUX_SIG_pin);
 }
-void affiche(int objet[4][8])
+void affiche(int objet[8][8])
 {
-  for (int i = 0; i < 4; i ++) 
+  for (int i = 0; i < 8; i ++) 
   {
       for (int j=0; j<8;j++)
       {
@@ -212,14 +240,14 @@ String changementPiece()
 {
 
   // fonction qui retourne la postion de la pièce qui a bougé
-  int etatBougerPiece1[2][8];
+  int etatBougerPiece1[8][8]; //variable qui va contenir les valeurs du plateau après le mouvement d'une pièce
   int positionPieceQuiBouge[2]={0,0};
   bool change=false;
   Serial.println("Change la piece de place");
   delay(6000);
   Serial.println("Enregistre les positions");
   //enregistrement du nouvel etat du plateau
-  for (int j=0; j<2 && !change; j++)
+  for (int j=0; j<4 && !change; j++)
   {
     for (int i = 0; i < 16 && !change; i ++) 
     {
@@ -253,10 +281,10 @@ String changementPiece()
   {
     //on peut allumer la led verte
     //Serial.println("Il y a eu un changement de position");
-    Serial.println(correspondance[positionPieceQuiBouge[0]]+String(positionPieceQuiBouge[1]+1)); //parce que sur arduino les positions sont numérotés de 0 à 3 mais en vrai elles vont de 1 à 4 
+    //Serial.println(correspondance[positionPieceQuiBouge[0]]+String(positionPieceQuiBouge[1]+1)); //parce que sur arduino les positions sont numérotés de 0 à 3 mais en vrai elles vont de 1 à 4 
     jeveuxchanger=false;
   }
   //Serial.println(positionPieceQuiBouge[0]);
   //Serial.println(positionPieceQuiBouge[1]);
-  return String(correspondance[positionPieceQuiBouge[0]]+String(positionPieceQuiBouge[1]+1));
+  return String(correspondance[positionPieceQuiBouge[1]]+String(positionPieceQuiBouge[0]+1));
 }
