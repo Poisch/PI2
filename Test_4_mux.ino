@@ -10,8 +10,15 @@ int boutonPin = 2;
 int etat[4][8];
 
 bool jeveuxchanger=false;
-int positionavant;
-int positionapres;
+String positionavant;
+String positionapres;
+String correspondance[8] = {"a","b","c","d","e","f","g","h"};
+
+// AFFICHAGE ECRAN LCD 
+
+#include <LiquidCrystal_I2C.h> // pour télécharger la librairie: croquis - include library - manage libraries - LiquidCrystal_I2C.h de Frank de Brabander
+LiquidCrystal_I2C lcd(0x27, 16, 2); //écran LCD 0x27 avec 16 colonnes et 2 lignes (ligne 0 et ligne 1)
+
 
 // MULTIPLEXER 1 - Lignes
 // ------------------------------------------------------------------
@@ -34,15 +41,52 @@ int MUX2_s3 = 28;
 //Mux_2 in "SIG" pin
 int MUX2_SIG_pin = 30;
 
+// MULTIPLEXER 3
+// ------------------------------------------------------------------
+//Mux_3 control pins
+int MUX3_s0 = 44;
+int MUX3_s1 = 42;
+int MUX3_s2 = 45;
+int MUX3_s3 = 43;
+//Mux_3 in "SIG" pin
+int MUX3_SIG_pin = 13;
+// ------------------------------------------------------------------
+
+// MULTIPLEXER 4
+// ------------------------------------------------------------------
+//Mux_4 control pins
+int MUX4_s0 = 40;
+int MUX4_s1 = 38;
+int MUX4_s2 = 41;
+int MUX4_s3 = 39;
+//Mux_4 in "SIG" pin
+int MUX4_SIG_pin = 12;
+// ------------------------------------------------------------------
+
+
 int MUX[2][5]  = {{MUX1_s0, MUX1_s1, MUX1_s2, MUX1_s3, MUX1_SIG_pin},{MUX2_s0, MUX2_s1, MUX2_s2, MUX2_s3, MUX2_SIG_pin}};
   
 void setup() {
+
+  Serial.begin(9600);
 
 // BOUTON POUSSOIR
 // ------------------------------------------------------------------
   pinMode(boutonPin,INPUT);
   attachInterrupt(digitalPinToInterrupt(boutonPin), changement , RISING); // attache l’interruption externe n°0 à la fonction blink
-  
+
+// AFFICHAGE ECRAN
+// ------------------------------------------------------------------
+
+  lcd.init(); //initialisation de l'écran LCD
+  lcd.cursor_on();
+  lcd.blink_on();
+  lcd.backlight();
+  lcd.print("Jeu d'Echec");
+
+  while (!Serial) {
+    ; // attendre la connexion série
+  }
 // MULTIPLEXER 1
 // ------------------------------------------------------------------
   pinMode(MUX1_s0, OUTPUT);
@@ -73,7 +117,7 @@ void setup() {
   digitalWrite(MUX2_s3, LOW);
 // ------------------------------------------------------------------
 
-  Serial.begin(9600);
+  
   
 }
 
@@ -101,7 +145,7 @@ void loop()
   
   affiche(etat);
   Serial.println();  
-  //Serial.println();
+  Serial.println();
   //Serial.println();
   
  if(jeveuxchanger)
@@ -109,7 +153,7 @@ void loop()
       positionavant=changementPiece();
       delay(100);
       positionapres=changementPiece();
-      Serial.println("Vous pouvez poser la piece");
+      affichepositions(positionavant,positionapres);
     }
     delay(1000);
   
@@ -159,19 +203,25 @@ void changement()
   else{jeveuxchanger=true;}
 }
 
-int changementPiece()
+void affichepositions(String avant, String apres)
 {
+  Serial.println(avant+apres);
+}
+
+String changementPiece()
+{
+
   // fonction qui retourne la postion de la pièce qui a bougé
   int etatBougerPiece1[2][8];
-  int positionPieceQuiBouge[2];
+  int positionPieceQuiBouge[2]={0,0};
   bool change=false;
   Serial.println("Change la piece de place");
-  delay(3000);
+  delay(6000);
   Serial.println("Enregistre les positions");
   //enregistrement du nouvel etat du plateau
-  for (int j=0; j<2; j++)
+  for (int j=0; j<2 && !change; j++)
   {
-    for (int i = 0; i < 16; i ++) 
+    for (int i = 0; i < 16 && !change; i ++) 
     {
       if (i < 8)
       {
@@ -202,9 +252,11 @@ int changementPiece()
   if(change)
   {
     //on peut allumer la led verte
-    Serial.println("Il y a eu un changement de position");
-    Serial.println("La piece qui a bouge etait en ligne : "+ String(positionPieceQuiBouge[0]+1)+"\nEn colonne : "+ String(positionPieceQuiBouge[1]+1)); //parce que sur arduino les positions sont numérotés de 0 à 3 mais en vrai elles vont de 1 à 4 
+    //Serial.println("Il y a eu un changement de position");
+    Serial.println(correspondance[positionPieceQuiBouge[0]]+String(positionPieceQuiBouge[1]+1)); //parce que sur arduino les positions sont numérotés de 0 à 3 mais en vrai elles vont de 1 à 4 
     jeveuxchanger=false;
   }
-  return positionPieceQuiBouge;
+  //Serial.println(positionPieceQuiBouge[0]);
+  //Serial.println(positionPieceQuiBouge[1]);
+  return String(correspondance[positionPieceQuiBouge[0]]+String(positionPieceQuiBouge[1]+1));
 }
