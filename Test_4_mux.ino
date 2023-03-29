@@ -6,7 +6,7 @@
 
 // BOUTON POUSSOIR
 // ------------------------------------------------------------------
-int boutonPin = 2;
+int boutonPin = 19;
 int etat[8][8];
 
 bool jeveuxchanger=false;
@@ -23,12 +23,12 @@ LiquidCrystal_I2C lcd(0x27, 16, 2); //écran LCD 0x27 avec 16 colonnes et 2 lign
 // MULTIPLEXER 1 - Lignes
 // ------------------------------------------------------------------
 //Mux_1 control pins
-int MUX1_s0 = 9;
-int MUX1_s1 = 10;
-int MUX1_s2 = 11;
-int MUX1_s3 = 12;
+int MUX1_s0 = 53;
+int MUX1_s1 = 52;
+int MUX1_s2 = 51;
+int MUX1_s3 = 50;
 //Mux_1 in "SIG" pin
-int MUX1_SIG_pin = 7;
+int MUX1_SIG_pin = 22;
 
 // MULTIPLEXER 2
 // ------------------------------------------------------------------
@@ -38,29 +38,29 @@ int MUX2_s1 = 46;
 int MUX2_s2 = 49;
 int MUX2_s3 = 47;
 //Mux_2 in "SIG" pin
-int MUX2_SIG_pin = 14;
+int MUX2_SIG_pin = 23;
 // ------------------------------------------------------------------
 
 // MULTIPLEXER 3
 // ------------------------------------------------------------------
 //Mux_3 control pins
-int MUX3_s0 = 44;
-int MUX3_s1 = 42;
-int MUX3_s2 = 45;
-int MUX3_s3 = 43;
+int MUX3_s0 = 30;
+int MUX3_s1 = 31;
+int MUX3_s2 = 32;
+int MUX3_s3 = 33;
 //Mux_3 in "SIG" pin
-int MUX3_SIG_pin = 13;
+int MUX3_SIG_pin = 25;
 // ------------------------------------------------------------------
 
 // MULTIPLEXER 4
 // ------------------------------------------------------------------
 //Mux_4 control pins
-int MUX4_s0 = 40;
-int MUX4_s1 = 38;
-int MUX4_s2 = 41;
-int MUX4_s3 = 39;
-//Mux_4 in "SIG" pin
-int MUX4_SIG_pin = 100;
+int MUX4_s0 = 38;
+int MUX4_s1 = 39;
+int MUX4_s2 = 40;
+int MUX4_s3 = 41;
+//Mux_4 in "SIG" pin 
+int MUX4_SIG_pin = 24;
 // ------------------------------------------------------------------
 
 int MUX[4][5]  = {{MUX1_s0, MUX1_s1, MUX1_s2, MUX1_s3, MUX1_SIG_pin}, {MUX2_s0, MUX2_s1, MUX2_s2, MUX2_s3, MUX2_SIG_pin}, {MUX3_s0, MUX3_s1, MUX3_s2, MUX3_s3, MUX3_SIG_pin}, {MUX4_s0, MUX4_s1, MUX4_s2, MUX4_s3, MUX4_SIG_pin}};
@@ -151,8 +151,8 @@ void setup() {
 void loop() {
 
   //Loop through and read all 16 values
-  //Serial.println("A B C D E F G H");
-  //Serial.println("---------------");
+  Serial.println("ABCDEFGH");
+  Serial.println("---------------");
   
   for (int j=0; j<4; j++)
   {
@@ -209,7 +209,8 @@ float readMux(int channel, int MUX_s0, int MUX_s1, int MUX_s2, int MUX_s3, int M
                             {1, 1, 1, 1}
                           };
   //loop through the 4 sig
-  for (int i = 0; i < 4; i ++) {
+  for (int i = 0; i < 4; i ++) 
+  {
     digitalWrite(controlPin[i], muxChannel[channel][i]);
   }
   
