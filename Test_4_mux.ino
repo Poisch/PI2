@@ -12,7 +12,7 @@ int etat[8][8];
 bool jeveuxchanger=false;
 String positionavant;
 String positionapres;
-String correspondance[8] = {"a","b","c","d","e","f","g","h"};
+String correspondance[8] = {"a","b","c","d","e","f","g","h"}; //permet de transcrire le numéro de colonne en lettre pour etre compatible avec l'API
 
 // AFFICHAGE ECRAN LCD 
 
@@ -150,20 +150,25 @@ void setup() {
 
 void loop() {
 
+  //Affichage pour faciliter la lecture des valeurs du plateau quand on les affiche dans le moniteur série pour faire des tests
   //Loop through and read all 16 values
-  Serial.println("ABCDEFGH");
-  Serial.println("---------------");
+  //Serial.println("ABCDEFGH");
+  //Serial.println("---------------");
   
+  
+  //Regarde l'état du plateau en regardant chaque valeur reçue par les multiplexeurs
   for (int j=0; j<4; j++)
   {
+    //Parcours les multiplexeurs 1 à 4
     
     for (int i = 0; i < 16; i ++) 
     {
-      if (i < 8)
+      //Parcours les pin c0 à c15 du multiplexeur
+      if (i < 8) //Si la case concernée appartient à la première ligne gérée par le multiplexeur
       {
         etat[j*2][i]=readMux(i, MUX[j][0], MUX[j][1], MUX[j][2], MUX[j][3], MUX[j][4]);
       }
-      else
+      else // Si la case concernée appartient à la deuxième ligne gérée par le multiplexeur
       {
         etat[j*2+1][i-8]=readMux(i, MUX[j][0], MUX[j][1], MUX[j][2], MUX[j][3], MUX[j][4]);
       }
@@ -172,16 +177,16 @@ void loop() {
   delay(1000);
   
   //affichage du plateau et de son etat atuel
-  affiche(etat);
-  Serial.println();  
-  Serial.println();
+ // affiche(etat);
+  //Serial.println();   /retour à la ligne pour faciliter la lecture des valeurs
+  //Serial.println();
   //Serial.println();
   
- if(jeveuxchanger)
-  {
-      positionavant=changementPiece();
-      delay(100);
-      positionapres=changementPiece();
+ if(jeveuxchanger) //Si j'ai appuyé sur le bouton poussoir
+  { 
+      positionavant=changementPiece(); // Détermine la position initiale de la pièce qui a été bougée
+      delay(100); // Pas forcément utile
+      positionapres=changementPiece(); // Même chose mais pour la position finale
       affichepositions(positionavant,positionapres);
   }
   delay(1000);
@@ -190,6 +195,7 @@ void loop() {
 
 float readMux(int channel, int MUX_s0, int MUX_s1, int MUX_s2, int MUX_s3, int MUX_SIG_pin) 
 {
+  //Permet de lire la valeur du channel du MUX (Multiplexeur) désiré
   int controlPin[] = {MUX_s0, MUX_s1, MUX_s2, MUX_s3};
   int muxChannel[16][4] = { {0, 0, 0, 0},
                             {1, 0, 0, 0},
@@ -214,10 +220,11 @@ float readMux(int channel, int MUX_s0, int MUX_s1, int MUX_s2, int MUX_s3, int M
     digitalWrite(controlPin[i], muxChannel[channel][i]);
   }
   
-  return digitalRead(MUX_SIG_pin);
+  return digitalRead(MUX_SIG_pin); //Renvoie 1 ou 0 en fonction de si l'interrupteur est fermé ou non
 }
 void affiche(int objet[8][8])
 {
+  //Fonction d'affichage du plateau
   for (int i = 0; i < 8; i ++) 
   {
       for (int j=0; j<8;j++)
@@ -229,12 +236,14 @@ void affiche(int objet[8][8])
 }
 void changement()
 {
+  //Fonction liée à l'interrupt pour interrompre la fonction loop et changer la valeur de jeveuxchanger immédiatement après une pression sur le bouton poussoir
   if(jeveuxchanger){jeveuxchanger=false;}
   else{jeveuxchanger=true;}
 }
 
 void affichepositions(String avant, String apres)
 {
+  //Fonction affichant l'information destinée à l'API dans le moniteur série et qui transcrit cette information sur l'écran LCD
   Serial.println(avant+apres);
   lcd.clear(); // Efface l'écran LCD
   lcd.print("De :"+ avant+ " a :" +apres); // Affiche le mode
@@ -242,7 +251,6 @@ void affichepositions(String avant, String apres)
 
 String changementPiece()
 {
-
   // fonction qui retourne la postion de la pièce qui a bougé
   int etatBougerPiece1[8][8]; //variable qui va contenir les valeurs du plateau après le mouvement d'une pièce
   int positionPieceQuiBouge[2]={0,0};
@@ -266,7 +274,7 @@ String changementPiece()
       if (i < 8)
       {
         etatBougerPiece1[j*2][i]=readMux(i, MUX[j][0], MUX[j][1], MUX[j][2], MUX[j][3], MUX[j][4]);
-        if(etatBougerPiece1[j*2][i]!=etat[j*2][i])
+        if(etatBougerPiece1[j*2][i]!=etat[j*2][i]) //comparaison avec l'ancien etat
         {
           positionPieceQuiBouge[0]=j*2;
           positionPieceQuiBouge[1]=i;
@@ -277,7 +285,7 @@ String changementPiece()
       else
       {
         etatBougerPiece1[j*2+1][i-8]=readMux(i, MUX[j][0], MUX[j][1], MUX[j][2], MUX[j][3], MUX[j][4]);
-        if(etatBougerPiece1[j*2+1][i-8]!=etat[j*2+1][i-8])
+        if(etatBougerPiece1[j*2+1][i-8]!=etat[j*2+1][i-8]) //comparaison avec l'ancien etat
         {
           positionPieceQuiBouge[0]=j*2+1;
           positionPieceQuiBouge[1]=i-8;
@@ -287,8 +295,7 @@ String changementPiece()
       }
     }
   }
-  //comparaison avec l'ancien etat
-
+  
   if(change)
   {
     
